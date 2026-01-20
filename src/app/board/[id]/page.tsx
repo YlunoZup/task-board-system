@@ -206,6 +206,7 @@ export default function BoardPage({ params }: BoardPageProps) {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theme, setTheme])
 
   // Refresh handler
