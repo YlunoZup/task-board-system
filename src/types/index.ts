@@ -110,7 +110,7 @@ export interface CreateTaskDto {
 
 export interface UpdateTaskDto {
   title?: string
-  description?: string
+  description?: string | null
   status?: TaskStatus
   priority?: TaskPriority
   dueDate?: string | null
