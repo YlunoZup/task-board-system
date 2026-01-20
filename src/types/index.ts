@@ -113,7 +113,7 @@ export interface UpdateTaskDto {
   description?: string | null
   status?: TaskStatus
   priority?: TaskPriority
-  dueDate?: string | null
+  dueDate?: Date | string | null
   assignedTo?: string | null
   position?: number
   labelIds?: string[]
