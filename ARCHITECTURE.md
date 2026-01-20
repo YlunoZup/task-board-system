@@ -280,22 +280,6 @@ Output Directory: .next
 Install Command: npm install
 ```
 
-### CI/CD Pipeline (GitHub Actions)
-
-```yaml
-name: CI
-on: [push, pull_request]
-jobs:
-  build:
-    - Checkout
-    - Setup Node.js 20
-    - npm ci
-    - prisma generate
-    - npm run lint
-    - tsc --noEmit
-    - next build
-```
-
 ### Environment Variables
 
 | Variable | Purpose |

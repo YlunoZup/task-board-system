@@ -119,7 +119,6 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser.
 | Validation | Zod |
 | Icons | Lucide React |
 | Deployment | Vercel |
-| CI/CD | GitHub Actions |
 
 ## Project Structure
 
@@ -276,7 +275,6 @@ Vercel auto-detects Next.js and configures everything automatically.
 - [x] Board Customization
 - [x] Confetti Celebrations
 - [x] Dark Mode
-- [x] CI/CD Pipeline
 
 ## Author
 
