@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Board model - A container for tasks
+model Board {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  color       String   @default("#6366f1") // Default indigo color
+  icon        String?  @default("clipboard") // Icon name from lucide-react
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // One-to-many relationship: A board has many tasks
+  // When a board is deleted, all its tasks are also deleted (cascade)
+  tasks Task[]
+
+  @@index([createdAt])
+}
+
+// Task model - Belongs to one board
+model Task {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  status      String   @default("todo") // "todo", "in_progress", "done"
+  priority    String   @default("medium") // "low", "medium", "high"
+  dueDate     DateTime?
+  assignedTo  String?
+  position    Int      @default(0) // For ordering tasks within a column
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Foreign key relationship to Board
+  boardId String
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+
+  // Many-to-many relationship with labels
+  labels TaskLabel[]
+
+  // One-to-many relationship with subtasks
+  subtasks Subtask[]
+
+  @@index([boardId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Label model - Reusable tags for tasks
+model Label {
+  id        String   @id @default(cuid())
+  name      String
+  color     String   @default("#6366f1") // Default indigo color
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Many-to-many relationship with tasks
+  tasks TaskLabel[]
+
+  @@unique([name])
+  @@index([createdAt])
+}
+
+// Junction table for Task-Label many-to-many relationship
+model TaskLabel {
+  id        String   @id @default(cuid())
+  taskId    String
+  labelId   String
+  createdAt DateTime @default(now())
+
+  task  Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  label Label @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, labelId])
+  @@index([taskId])
+  @@index([labelId])
+}
+
+// Subtask/Checklist item model
+model Subtask {
+  id        String   @id @default(cuid())
+  title     String
+  completed Boolean  @default(false)
+  position  Int      @default(0) // For ordering subtasks
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Foreign key relationship to Task
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([position])
+}
