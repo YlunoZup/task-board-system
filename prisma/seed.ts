@@ -5,9 +5,26 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('Seeding database...')
 
-  // Clear existing data
+  // Clear existing data (in correct order for foreign keys)
+  await prisma.subtask.deleteMany()
+  await prisma.taskLabel.deleteMany()
   await prisma.task.deleteMany()
+  await prisma.label.deleteMany()
   await prisma.board.deleteMany()
+
+  // Create labels
+  const labels = await Promise.all([
+    prisma.label.create({ data: { name: 'Feature', color: '#22c55e' } }),
+    prisma.label.create({ data: { name: 'Bug', color: '#ef4444' } }),
+    prisma.label.create({ data: { name: 'Enhancement', color: '#3b82f6' } }),
+    prisma.label.create({ data: { name: 'Documentation', color: '#a855f7' } }),
+    prisma.label.create({ data: { name: 'Urgent', color: '#f97316' } }),
+    prisma.label.create({ data: { name: 'Backend', color: '#06b6d4' } }),
+    prisma.label.create({ data: { name: 'Frontend', color: '#ec4899' } }),
+    prisma.label.create({ data: { name: 'DevOps', color: '#eab308' } }),
+  ])
+
+  console.log(`Created ${labels.length} labels`)
 
   // Create sample boards
   const projectAlpha = await prisma.board.create({
@@ -153,8 +170,78 @@ async function main() {
     },
   })
 
+  // Get all tasks to add labels and subtasks
+  const allTasks = await prisma.task.findMany()
+
+  // Add labels to tasks
+  const labelMap = {
+    'Feature': labels[0].id,
+    'Bug': labels[1].id,
+    'Enhancement': labels[2].id,
+    'Documentation': labels[3].id,
+    'Urgent': labels[4].id,
+    'Backend': labels[5].id,
+    'Frontend': labels[6].id,
+    'DevOps': labels[7].id,
+  }
+
+  // Assign labels to some tasks
+  for (const task of allTasks) {
+    const taskLabels: string[] = []
+
+    if (task.title.toLowerCase().includes('auth') || task.title.toLowerCase().includes('api')) {
+      taskLabels.push(labelMap['Backend'])
+    }
+    if (task.title.toLowerCase().includes('ui') || task.title.toLowerCase().includes('dashboard') || task.title.toLowerCase().includes('layout')) {
+      taskLabels.push(labelMap['Frontend'])
+    }
+    if (task.title.toLowerCase().includes('bug') || task.title.toLowerCase().includes('fix') || task.title.toLowerCase().includes('leak')) {
+      taskLabels.push(labelMap['Bug'])
+    }
+    if (task.priority === 'high') {
+      taskLabels.push(labelMap['Urgent'])
+    }
+    if (task.title.toLowerCase().includes('set up') || task.title.toLowerCase().includes('infrastructure')) {
+      taskLabels.push(labelMap['DevOps'])
+    }
+
+    for (const labelId of taskLabels) {
+      await prisma.taskLabel.create({
+        data: { taskId: task.id, labelId }
+      })
+    }
+  }
+
+  // Add subtasks to the first few tasks
+  const tasksWithSubtasks = allTasks.slice(0, 5)
+
+  const subtaskData = [
+    ['Research best practices', 'Set up development environment', 'Write initial code', 'Code review'],
+    ['Create wireframes', 'Design mockups', 'Get stakeholder approval', 'Implement design'],
+    ['Set up OAuth providers', 'Implement JWT tokens', 'Add refresh token logic', 'Test authentication flow'],
+    ['Design component library', 'Build chart components', 'Add responsive breakpoints', 'Test on mobile devices'],
+    ['Research rate limiting strategies', 'Implement middleware', 'Add Redis caching', 'Load testing'],
+  ]
+
+  for (let i = 0; i < tasksWithSubtasks.length; i++) {
+    const task = tasksWithSubtasks[i]
+    const subtasks = subtaskData[i]
+
+    for (let j = 0; j < subtasks.length; j++) {
+      await prisma.subtask.create({
+        data: {
+          title: subtasks[j],
+          taskId: task.id,
+          position: j,
+          completed: j < 2, // First two subtasks are completed
+        }
+      })
+    }
+  }
+
   console.log('Seeding completed!')
   console.log(`Created boards: ${projectAlpha.name}, ${marketingBoard.name}, ${bugTracker.name}`)
+  console.log(`Created ${labels.length} labels and subtasks for ${tasksWithSubtasks.length} tasks`)
 }
 
 main()

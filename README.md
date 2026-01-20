@@ -1,37 +1,52 @@
-# TaskFlow - Modern Task Board System
+# TaskFlow - Enterprise Task Board System
 
-A powerful, modern task management system built with Next.js 14, featuring Kanban-style boards, real-time updates, analytics dashboard, and data export capabilities.
+A powerful, enterprise-grade task management system built with Next.js 14, featuring Kanban-style boards, real-time updates, advanced analytics, and comprehensive project management tools.
 
-![Next.js](https://img.shields.io/badge/Next.js-14-black)
+## Live Demo
+
+**[https://task-board-system-gamma.vercel.app](https://task-board-system-gamma.vercel.app)**
+
+![Next.js](https://img.shields.io/badge/Next.js-14.2-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
 ![Prisma](https://img.shields.io/badge/Prisma-5.9-teal)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon-336791)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38bdf8)
+![Vercel](https://img.shields.io/badge/Deployed-Vercel-black)
 
 ## Features
 
-### Core Features
+### Core Features (All PRD Requirements Met)
 - **Dashboard**: View all boards with task statistics and progress tracking
 - **Kanban Boards**: Organize tasks in To Do, In Progress, and Done columns
-- **Drag & Drop**: Intuitive task management with drag-and-drop support
-- **Task Management**: Create, edit, update status, and delete tasks
-- **Real-time Updates**: Auto-refresh data every 30 seconds
+- **Drag & Drop**: Intuitive task management with @dnd-kit
+- **Task Management**: Full CRUD operations with immediate updates
+- **Filter & Sort**: Filter by status, priority, search; sort by date/priority
+- **Real-time Updates**: Auto-refresh data polling
 
-### Bonus Features (All Implemented!)
-- **Analytics Dashboard**: Comprehensive statistics with visual charts
+### Bonus Features (All 3 Implemented!)
+- **Analytics Dashboard**: Comprehensive statistics with Recharts visualizations
   - Total boards and tasks count
-  - Task distribution by status
+  - Task distribution by status (pie charts, bar charts)
   - Completion rate percentage
-  - Recent activity feed
+  - Trend analysis over time
+- **Real-Time Updates**: 30-second polling for multi-window sync
 - **Data Export**: Download all data in JSON or CSV format
-- **Dark Mode**: Full dark/light theme support
 
-### Additional Innovations
-- **Search & Filter**: Filter tasks by priority, search by title/description
-- **Sorting**: Sort tasks by date, priority, or due date
-- **Responsive Design**: Works seamlessly on desktop and mobile
+### Enterprise Features (Beyond PRD)
+- **Command Palette** (`Cmd/Ctrl + K`): Quick navigation and actions
+- **Keyboard Shortcuts**: Full keyboard navigation with help dialog (`?`)
+- **Confetti Celebrations**: Visual feedback when completing tasks
+- **Labels/Tags System**: Color-coded labels with management UI
+- **Subtasks/Checklists**: Break tasks into subtasks with progress tracking
+- **Calendar View**: View tasks by due date in monthly calendar
+- **Quick Filters**: Save and load custom filter configurations
+- **Activity Feed**: Track recent actions on the board
+- **Board Settings**: Customize view mode, card display, themes
+- **Advanced Analytics**: Toggle detailed analytics with multiple chart types
+- **Dark/Light Mode**: Full theme support with system preference detection
+- **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
 - **Toast Notifications**: Instant feedback on all actions
-- **Smooth Animations**: Polished UI with Framer Motion animations
-- **Color-coded Boards**: Custom colors and icons for each board
+- **Smooth Animations**: Polished UI with Framer Motion
 
 ## Requirements
 
@@ -40,32 +55,49 @@ A powerful, modern task management system built with Next.js 14, featuring Kanba
 
 ## Quick Start
 
-### 1. Install Dependencies
+### 1. Clone Repository
+
+```bash
+git clone https://github.com/YlunoZup/task-board-system.git
+cd task-board-system
+```
+
+### 2. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### 2. Set Up Database
+### 3. Set Up Database
 
+For local development with SQLite:
 ```bash
-# Generate Prisma client
-npm run db:generate
+# Create .env file
+echo 'POSTGRES_PRISMA_URL="file:./dev.db"' > .env
+echo 'POSTGRES_URL_NON_POOLING="file:./dev.db"' >> .env
 
-# Push schema to database (creates SQLite database)
+# Generate Prisma client and push schema
+npm run db:generate
 npm run db:push
 
 # (Optional) Seed with sample data
 npm run db:seed
 ```
 
-### 3. Start Development Server
+For production with PostgreSQL (Neon):
+```bash
+# Set your Neon connection strings in .env
+POSTGRES_PRISMA_URL="postgresql://..."
+POSTGRES_URL_NON_POOLING="postgresql://..."
+```
+
+### 4. Start Development Server
 
 ```bash
 npm run dev
 ```
 
-### 4. Open Application
+### 5. Open Application
 
 Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
@@ -73,15 +105,21 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
 | Category | Technology |
 |----------|-----------|
-| Framework | Next.js 14 (App Router) |
+| Framework | Next.js 14.2 (App Router) |
 | Language | TypeScript 5.3 |
-| Database | SQLite (via Prisma ORM) |
+| Database | PostgreSQL (Neon) / SQLite |
+| ORM | Prisma 5.9 |
 | Styling | Tailwind CSS 3.4 |
 | UI Components | Radix UI Primitives |
 | Animations | Framer Motion |
 | Drag & Drop | @dnd-kit |
+| Charts | Recharts |
+| Command Palette | cmdk |
+| Confetti | canvas-confetti |
 | Validation | Zod |
 | Icons | Lucide React |
+| Deployment | Vercel |
+| CI/CD | GitHub Actions |
 
 ## Project Structure
 
@@ -91,20 +129,26 @@ src/
 │   ├── api/               # API routes
 │   │   ├── boards/       # Board CRUD operations
 │   │   ├── tasks/        # Task CRUD operations
+│   │   ├── labels/       # Labels CRUD operations
 │   │   ├── analytics/    # Analytics endpoint
 │   │   └── export/       # Data export endpoint
 │   ├── board/[id]/       # Board detail page
 │   └── page.tsx          # Dashboard page
 ├── components/            # React components
+│   ├── activity/         # Activity feed
+│   ├── analytics/        # Advanced analytics
 │   ├── board/            # Board-related components
-│   ├── task/             # Task-related components
-│   ├── ui/               # Reusable UI components
+│   ├── calendar/         # Calendar view
+│   ├── command-palette/  # Command palette
+│   ├── filters/          # Quick filters
+│   ├── keyboard-shortcuts/ # Keyboard shortcuts dialog
+│   ├── labels/           # Labels manager
 │   ├── layout/           # Layout components
-│   └── providers/        # Context providers
+│   ├── providers/        # Context providers
+│   ├── subtasks/         # Subtask list
+│   ├── task/             # Task-related components
+│   └── ui/               # Reusable UI components
 ├── lib/                   # Utility functions
-│   ├── prisma.ts         # Prisma client
-│   ├── utils.ts          # Helper functions
-│   └── validations.ts    # Zod schemas
 └── types/                 # TypeScript types
 ```
 
@@ -124,9 +168,24 @@ src/
 |--------|----------|-------------|
 | GET | `/api/tasks` | Get tasks (filter by boardId) |
 | POST | `/api/tasks` | Create a new task |
-| GET | `/api/tasks/[id]` | Get a single task |
 | PATCH | `/api/tasks/[id]` | Update a task |
 | DELETE | `/api/tasks/[id]` | Delete a task |
+
+### Subtasks
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/tasks/[id]/subtasks` | Get subtasks for a task |
+| POST | `/api/tasks/[id]/subtasks` | Create a subtask |
+| PATCH | `/api/tasks/[id]/subtasks/[subtaskId]` | Update a subtask |
+| DELETE | `/api/tasks/[id]/subtasks/[subtaskId]` | Delete a subtask |
+
+### Labels
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/labels` | Get all labels |
+| POST | `/api/labels` | Create a label |
+| PATCH | `/api/labels/[id]` | Update a label |
+| DELETE | `/api/labels/[id]` | Delete a label |
 
 ### Other
 | Method | Endpoint | Description |
@@ -134,6 +193,19 @@ src/
 | GET | `/api/analytics` | Get dashboard analytics |
 | GET | `/api/export?format=json` | Export data as JSON |
 | GET | `/api/export?format=csv` | Export data as CSV |
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| `Cmd/Ctrl + K` | Open command palette |
+| `Cmd/Ctrl + N` | Create new task |
+| `Cmd/Ctrl + D` | Toggle dark mode |
+| `Cmd/Ctrl + R` | Refresh data |
+| `Cmd/Ctrl + F` | Focus search |
+| `?` | Show keyboard shortcuts |
+| `A` | Toggle advanced analytics |
+| `1-4` | Filter by priority |
 
 ## Scripts
 
@@ -148,7 +220,6 @@ npm run start         # Start production server
 # Database
 npm run db:generate   # Generate Prisma client
 npm run db:push       # Push schema to database
-npm run db:migrate    # Run migrations
 npm run db:seed       # Seed sample data
 npm run db:studio     # Open Prisma Studio
 
@@ -156,37 +227,63 @@ npm run db:studio     # Open Prisma Studio
 npm run lint          # Run ESLint
 ```
 
-## Environment Variables
+## Deployment
 
-Copy `.env.example` to `.env`:
+This project is deployed on **Vercel** with **Neon PostgreSQL**.
 
-```bash
-# SQLite (default - recommended for local development)
-DATABASE_URL="file:./dev.db"
+### Deploy Your Own
 
-# PostgreSQL (for production)
-# DATABASE_URL="postgresql://user:password@localhost:5432/taskboard"
-```
+1. Fork this repository
+2. Import to Vercel
+3. Add Neon Postgres from Storage marketplace
+4. Deploy!
 
-## Screenshots
+Vercel auto-detects Next.js and configures everything automatically.
 
-### Dashboard
-- Board cards with task statistics
-- Analytics section with charts
-- Search and filter capabilities
+## PRD Compliance Checklist
 
-### Kanban Board
-- Drag-and-drop task management
-- Filter by priority and search
-- Sort by date, priority, or due date
+### Required Features
+- [x] Dashboard page showing all boards
+- [x] Can create a new board
+- [x] Can click a board to see its tasks
+- [x] Board detail page showing all tasks
+- [x] Tasks organized by status (Kanban columns)
+- [x] Can create a new task
+- [x] Can change task status (drag & drop or click)
+- [x] Can edit task title and details
+- [x] Can delete a task
+- [x] Filter tasks by status
+- [x] Sort tasks by field
+- [x] Data saves to database
+- [x] Basic error handling
+- [x] README with setup instructions
+- [x] AI workflow document
+- [x] Architecture decisions document
 
-### Dark Mode
-- Full theme support
-- System preference detection
+### Bonus Features (All 3!)
+- [x] **Analytics**: Dashboard with charts, completion rates, task distribution
+- [x] **Real-Time Updates**: 30-second polling for live sync
+- [x] **Export Data**: JSON and CSV export functionality
+
+### Beyond Requirements
+- [x] Command Palette
+- [x] Keyboard Shortcuts
+- [x] Labels/Tags System
+- [x] Subtasks/Checklists
+- [x] Calendar View
+- [x] Quick Filters
+- [x] Activity Feed
+- [x] Board Customization
+- [x] Confetti Celebrations
+- [x] Dark Mode
+- [x] CI/CD Pipeline
 
 ## Author
 
-Built for the Developer Assessment by YlunoZup.
+Built for the Developer Assessment by **YlunoZup**.
+
+- GitHub: [@YlunoZup](https://github.com/YlunoZup)
+- Live Demo: [task-board-system-gamma.vercel.app](https://task-board-system-gamma.vercel.app)
 
 ## License
 
